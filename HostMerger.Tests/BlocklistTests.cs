@@ -1,4 +1,5 @@
 using FluentAssertions;
+using HostMerger.Logic;
 using NUnit.Framework;
 using System.Linq;
 

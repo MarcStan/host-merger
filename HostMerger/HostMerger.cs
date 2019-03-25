@@ -1,3 +1,5 @@
+using HostMerger.Helper;
+using HostMerger.Logic;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.WebJobs;
@@ -12,15 +14,17 @@ namespace HostMerger
     {
         [FunctionName("HostMerger")]
         public static async Task HostMergerAsync(
-            [TimerTrigger(Constants.EveryDay)] TimerInfo timer,
+            [TimerTrigger(Constants.EveryDay, RunOnStartup = true)] TimerInfo timer,
             ExecutionContext context,
             ILogger log)
         {
             var config = LoadConfig(context, log);
 
-            var merger = new HostMergerLogic();
+            // ugly setup here but ensures better testability of components..
+            var merger = new HostMergerLogic(new HttpClient(new System.Net.Http.HttpClient()));
+            var cloudBlobManager = new CloudBlobManager(config.AzureWebJobsStorage);
 
-            await merger.RunHostMergingAsync(config);
+            await merger.RunHostMergingAsync(cloudBlobManager, config);
         }
 
         /// <summary>

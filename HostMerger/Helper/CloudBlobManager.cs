@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace HostMerger
+namespace HostMerger.Helper
 {
-    public class CloudBlobManager
+    public class CloudBlobManager : ICloudBlobManager
     {
         private readonly CloudBlobClient _client;
 

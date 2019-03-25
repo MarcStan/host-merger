@@ -2,11 +2,11 @@
 using System;
 using System.Diagnostics;
 
-namespace HostMerger
+namespace HostMerger.Extensions
 {
     public static class LoggerExtensions
     {
-        public static IDisposable Measure(this ILogger logger, string scopeName)
+        public static IDisposable MeasureDuration(this ILogger logger, string scopeName)
         {
             var ts = new Stopwatch();
             ts.Start();

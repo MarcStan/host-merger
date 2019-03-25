@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HostMerger
+namespace HostMerger.Logic
 {
     public class Blocklist
     {
