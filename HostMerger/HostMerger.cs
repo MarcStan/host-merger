@@ -2,9 +2,11 @@ using HostMerger.Config;
 using HostMerger.Extensions;
 using HostMerger.Helper;
 using HostMerger.Logic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Microsoft.Extensions.Logging;
@@ -14,6 +16,13 @@ namespace HostMerger
 {
     public static class HostMerger
     {
+        [FunctionName("execute")]
+        public static Task RunOnceAsync(
+            [HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest req,
+            ExecutionContext context,
+            ILogger log)
+            => HostMergerAsync(null, context, log);
+
         [FunctionName("HostMerger")]
         public static async Task HostMergerAsync(
             [TimerTrigger(Constants.EveryDay, RunOnStartup = true)] TimerInfo timer,
