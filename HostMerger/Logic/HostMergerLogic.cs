@@ -28,23 +28,29 @@ namespace HostMerger.Logic
 
         public async Task RunHostMergingAsync(ICloudBlobManager cloudBlobManager, Configuration config)
         {
-            Blocklist blocklist;
             HostSource source;
-            using (_log.MeasureDuration("ReadCache"))
+            List<string> allowedHosts;
+            using (_log.MeasureDuration("ReadWhitelist"))
             {
                 source = await cloudBlobManager.ReadAsync<HostSource>(config.Sources);
-                var existingHosts = await cloudBlobManager.ReadLinesAsync(config.Cache);
-                blocklist = new Blocklist
-                {
-                    Hostnames = new HashSet<string>(existingHosts)
-                };
+                var lines = await cloudBlobManager.ReadLinesAsync(config.Whitelist);
+                allowedHosts = lines
+                    .Where(l => !string.IsNullOrEmpty(l) || l.StartsWith("#"))
+                    .ToList();
             }
+            var blocklist = new Blocklist
+            {
+                Hostnames = new HashSet<string>()
+            };
             using (_log.MeasureDuration("UpdateAll"))
             {
                 blocklist = await AppendNewAsync(blocklist, source);
             }
-            using (_log.MeasureDuration("WriteCache"))
-                await cloudBlobManager.WriteAsync(config.Cache, blocklist.Hostnames.ToArray());
+            using (_log.MeasureDuration("ExcludeWhiltelistEntries"))
+            {
+                void remove(string s) => blocklist.Hostnames.Remove(s);
+                allowedHosts.ForEach(remove);
+            }
 
             string hostlist;
             using (_log.MeasureDuration("BuilldHostlist"))

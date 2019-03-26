@@ -14,25 +14,25 @@ using System.Threading.Tasks;
 
 namespace HostMerger
 {
-    public static class HostMerger
+    public static class Functions
     {
         [FunctionName("execute")]
         public static Task RunOnceAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest req,
             ExecutionContext context,
             ILogger log)
-            => HostMergerAsync(null, context, log);
+            => MergeHostsAsync(null, context, log);
 
-        [FunctionName("HostMerger")]
-        public static async Task HostMergerAsync(
-            [TimerTrigger(Constants.EveryDay, RunOnStartup = true)] TimerInfo timer,
+        [FunctionName("merge")]
+        public static async Task MergeHostsAsync(
+            [TimerTrigger(Constants.EveryDay)] TimerInfo timer,
             ExecutionContext context,
             ILogger log)
         {
             var config = LoadConfig(context, log);
 
             // ugly setup here but ensures better testability of components..
-            var merger = new HostMergerLogic(new HttpClient(new System.Net.Http.HttpClient()), log);
+            var merger = new HostMergerLogic(new Helper.HttpClient(new System.Net.Http.HttpClient()), log);
             var cloudBlobManager = new CloudBlobManager(config.AzureWebJobsStorage, config.ContainerName);
 
             await merger.RunHostMergingAsync(cloudBlobManager, config);

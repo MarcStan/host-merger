@@ -6,7 +6,7 @@
 
         public string Sources { get; set; }
 
-        public string Cache { get; set; }
+        public string Whitelist { get; set; }
 
         public string Output { get; set; }
 

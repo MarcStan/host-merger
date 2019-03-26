@@ -4,11 +4,7 @@
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
-    "KeyVaultName": "hostmerger",
-    "ContainerName": "config",
-    "Sources": "sources.json",
-    "Cache": "metadata.txt",
-    "Output": "hosts.txt"
+    "KeyVaultName": "hostmerger"
   },
   "ConnectionStrings": {}
 }
