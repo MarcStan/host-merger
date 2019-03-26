@@ -1,3 +1,5 @@
+using HostMerger.Config;
+using HostMerger.Extensions;
 using HostMerger.Helper;
 using HostMerger.Logic;
 using Microsoft.Azure.KeyVault;
@@ -21,8 +23,8 @@ namespace HostMerger
             var config = LoadConfig(context, log);
 
             // ugly setup here but ensures better testability of components..
-            var merger = new HostMergerLogic(new HttpClient(new System.Net.Http.HttpClient()));
-            var cloudBlobManager = new CloudBlobManager(config.AzureWebJobsStorage);
+            var merger = new HostMergerLogic(new HttpClient(new System.Net.Http.HttpClient()), log);
+            var cloudBlobManager = new CloudBlobManager(config.AzureWebJobsStorage, config.ContainerName);
 
             await merger.RunHostMergingAsync(cloudBlobManager, config);
         }
@@ -35,18 +37,18 @@ namespace HostMerger
         /// <param name="log"></param>
         private static Configuration LoadConfig(ExecutionContext context, ILogger log)
         {
-            using (var init = log.BeginScope("ConfigLoading"))
+            using (log.MeasureDuration("ConfigLoading"))
             {
                 var builder = new ConfigurationBuilder()
                     .SetBasePath(context.FunctionAppDirectory)
-                    .AddJsonFile("settings.json", optional: false, reloadOnChange: true)
                     .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                     .AddEnvironmentVariables();
                 var tmpConfig = builder.Build();
 
+                var keyvault = tmpConfig["KeyVaultName"];
                 var tokenProvider = new AzureServiceTokenProvider();
                 var kvClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(tokenProvider.KeyVaultTokenCallback));
-                builder.AddAzureKeyVault($"https://{tmpConfig["KeyVaultName"]}.vault.azure.net", kvClient, new DefaultKeyVaultSecretManager());
+                builder.AddAzureKeyVault($"https://{keyvault}.vault.azure.net", kvClient, new DefaultKeyVaultSecretManager());
 
                 var config = new Configuration();
                 var cfg = builder.Build();

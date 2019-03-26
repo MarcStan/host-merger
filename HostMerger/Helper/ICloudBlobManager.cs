@@ -5,12 +5,12 @@ namespace HostMerger.Helper
 {
     public interface ICloudBlobManager
     {
-        Task<IReadOnlyList<string>> ReadLinesAsync(BlobStorageFileInfo fi);
+        Task<IReadOnlyList<string>> ReadLinesAsync(string blobName);
 
-        Task<T> ReadAsync<T>(BlobStorageFileInfo fi);
+        Task<T> ReadAsync<T>(string blobName);
 
-        Task WriteAsync(BlobStorageFileInfo fi, string content);
+        Task WriteAsync(string blobName, string content);
 
-        Task WriteAsync(BlobStorageFileInfo fi, string[] lines);
+        Task WriteAsync(string blobName, string[] lines);
     }
 }

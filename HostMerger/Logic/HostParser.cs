@@ -7,12 +7,15 @@ namespace HostMerger.Logic
     {
         public static string[] Parse(string[] lines)
         {
+            var comments = new[] { '#', '|', '!' };
+            bool isComment(string line) => comments.Contains(line.First());
+
             // expecting "ip hostname" e.g. "0.0.0.0 ads.com", ":: ad.com"
             return lines
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Select(x => x.Trim())
-                .Where(x => !x.StartsWith("#") && x.Contains(" "))
-                .Select(x => x.Split(' ')[1])
+                .Where(x => !isComment(x) && (x.Contains(" ") || (x.Contains("\t"))))
+                .Select(x => x.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries)[1])
                 .ToArray();
         }
 

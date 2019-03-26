@@ -1,4 +1,7 @@
-﻿using HostMerger.Helper;
+﻿using HostMerger.Config;
+using HostMerger.Extensions;
+using HostMerger.Helper;
+using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
 using System;
@@ -12,10 +15,12 @@ namespace HostMerger.Logic
     {
         private readonly AsyncRetryPolicy _policy;
         private readonly IHttpClient _httpClient;
+        private readonly ILogger _log;
 
-        public HostMergerLogic(IHttpClient client)
+        public HostMergerLogic(IHttpClient client, ILogger log)
         {
             _httpClient = client ?? throw new ArgumentNullException(nameof(client));
+            _log = log ?? throw new ArgumentNullException(nameof(log));
 
             _policy = Policy.Handle<Exception>()
                 .RetryAsync(3);
@@ -23,19 +28,30 @@ namespace HostMerger.Logic
 
         public async Task RunHostMergingAsync(ICloudBlobManager cloudBlobManager, Configuration config)
         {
-            var content = await cloudBlobManager.ReadAsync<HostSource>(config.Sources);
-            var existingHosts = await cloudBlobManager.ReadLinesAsync(config.Sources);
-            var blocklist = new Blocklist
+            Blocklist blocklist;
+            HostSource source;
+            using (_log.MeasureDuration("ReadCache"))
             {
-                Hostnames = new HashSet<string>(existingHosts)
-            };
-            blocklist = await AppendNewAsync(blocklist, content);
+                source = await cloudBlobManager.ReadAsync<HostSource>(config.Sources);
+                var existingHosts = await cloudBlobManager.ReadLinesAsync(config.Cache);
+                blocklist = new Blocklist
+                {
+                    Hostnames = new HashSet<string>(existingHosts)
+                };
+            }
+            using (_log.MeasureDuration("UpdateAll"))
+            {
+                blocklist = await AppendNewAsync(blocklist, source);
+            }
+            using (_log.MeasureDuration("WriteCache"))
+                await cloudBlobManager.WriteAsync(config.Cache, blocklist.Hostnames.ToArray());
 
-            await cloudBlobManager.WriteAsync(config.Cache, blocklist.Hostnames.ToArray());
+            string hostlist;
+            using (_log.MeasureDuration("BuilldHostlist"))
+                hostlist = blocklist.Build();
 
-            var hostlist = blocklist.Build();
-
-            await cloudBlobManager.WriteAsync(config.Output, hostlist);
+            using (_log.MeasureDuration("UploadHostlist"))
+                await cloudBlobManager.WriteAsync(config.Output, hostlist);
         }
 
         /// <summary>
@@ -54,13 +70,14 @@ namespace HostMerger.Logic
             {
                 blocklist.Hostnames.Add(host);
             }
-
-            var sources = await Task.WhenAll(newSources.Links.Select(LoadHostFileAsync));
-
-            foreach (var src in sources)
+            foreach (var url in newSources.Links)
             {
-                // don't parallelize, otherwise we would need to synchronize the hashset!
-                blocklist = await AppendNewAsync(blocklist, src);
+                using (_log.MeasureDuration($"FetchHosts - {url}"))
+                {
+                    var src = await LoadHostFileAsync(url);
+                    // don't parallelize, otherwise we would need to synchronize the hashset!
+                    blocklist = await AppendNewAsync(blocklist, src);
+                }
             }
             return blocklist;
         }

@@ -14,8 +14,8 @@ namespace HostMerger.Extensions
             {
                 ts.Stop();
                 logger.LogMetric(scopeName, ts.Elapsed.TotalMilliseconds);
-                var time = ts.Elapsed.TotalMilliseconds > 5000 ? $"{ts.Elapsed.TotalSeconds}s" : $"{ts.Elapsed.TotalMilliseconds}ms";
-                logger.LogInformation($"Scope {scopeName} finished in {time}");
+                var time = ts.Elapsed.TotalMilliseconds > 5000 ? $"{Math.Round(ts.Elapsed.TotalSeconds)}s" : $"{ts.Elapsed.TotalMilliseconds}ms";
+                logger.LogInformation($"Scope '{scopeName}' finished in {time}");
             });
         }
 

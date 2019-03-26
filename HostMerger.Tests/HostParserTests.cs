@@ -70,5 +70,16 @@ namespace HostMerger.Tests
             hosts.Should().HaveCount(3);
             hosts.Should().ContainInOrder("example.com", "foobar.com", "blub.com");
         }
+
+        [TestCase("0.0.0.0 example.com #ad")]
+        [TestCase("0.0.0.0 example.com # 0.0.0.0 foobar.com")]
+        [TestCase("0.0.0.0\texample.com")]
+        [TestCase("0.0.0.0\texample.com           ")]
+        public void EdgeCasesShouldWork(string line)
+        {
+            var hosts = HostParser.Parse(line);
+            hosts.Should().HaveCount(1);
+            hosts[0].Should().Be("example.com");
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using HostMerger.Helper;
 using HostMerger.Logic;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -15,7 +16,7 @@ namespace HostMerger.Tests
         [Test]
         public async Task AppendRawToEmptyBlocklist()
         {
-            var merger = new HostMergerLogic(new Mock<IHttpClient>().Object);
+            var merger = new HostMergerLogic(new Mock<IHttpClient>().Object, new Mock<ILogger>().Object);
 
             var blocklist = new Blocklist();
             var sources = new HostSource
@@ -36,7 +37,7 @@ namespace HostMerger.Tests
         [Test]
         public async Task AppendRawToBlocklist()
         {
-            var merger = new HostMergerLogic(new Mock<IHttpClient>().Object);
+            var merger = new HostMergerLogic(new Mock<IHttpClient>().Object, new Mock<ILogger>().Object);
 
             var blocklist = new Blocklist
             {
@@ -63,7 +64,7 @@ namespace HostMerger.Tests
         [Test]
         public async Task AppendRawToBlocklistShouldMergeDuplicates()
         {
-            var merger = new HostMergerLogic(new Mock<IHttpClient>().Object);
+            var merger = new HostMergerLogic(new Mock<IHttpClient>().Object, new Mock<ILogger>().Object);
 
             var blocklist = new Blocklist
             {
@@ -90,7 +91,7 @@ namespace HostMerger.Tests
         [Test]
         public async Task AppendHostsToEmptyBlocklist()
         {
-            var merger = new HostMergerLogic(new Mock<IHttpClient>().Object);
+            var merger = new HostMergerLogic(new Mock<IHttpClient>().Object, new Mock<ILogger>().Object);
 
             var blocklist = new Blocklist();
             var sources = new HostSource
@@ -111,7 +112,7 @@ namespace HostMerger.Tests
         [Test]
         public async Task AppendHostsToBlocklist()
         {
-            var merger = new HostMergerLogic(new Mock<IHttpClient>().Object);
+            var merger = new HostMergerLogic(new Mock<IHttpClient>().Object, new Mock<ILogger>().Object);
 
             var blocklist = new Blocklist
             {
@@ -138,7 +139,7 @@ namespace HostMerger.Tests
         [Test]
         public async Task AppendHostsToBlocklistShouldMergeDuplicates()
         {
-            var merger = new HostMergerLogic(new Mock<IHttpClient>().Object);
+            var merger = new HostMergerLogic(new Mock<IHttpClient>().Object, new Mock<ILogger>().Object);
 
             var blocklist = new Blocklist
             {
@@ -173,7 +174,7 @@ namespace HostMerger.Tests
             clientMock.Setup(x => x.GetAsync(url))
                 .Returns(Task.FromResult(fakeResponse));
 
-            var merger = new HostMergerLogic(clientMock.Object);
+            var merger = new HostMergerLogic(clientMock.Object, new Mock<ILogger>().Object);
 
             var blocklist = new Blocklist();
             var sources = new HostSource
@@ -201,7 +202,7 @@ namespace HostMerger.Tests
             clientMock.Setup(x => x.GetAsync(url))
                 .Returns(Task.FromResult(fakeResponse));
 
-            var merger = new HostMergerLogic(clientMock.Object);
+            var merger = new HostMergerLogic(clientMock.Object, new Mock<ILogger>().Object);
 
             var blocklist = new Blocklist
             {
@@ -235,7 +236,7 @@ namespace HostMerger.Tests
             clientMock.Setup(x => x.GetAsync(url))
                 .Returns(Task.FromResult(fakeResponse));
 
-            var merger = new HostMergerLogic(clientMock.Object);
+            var merger = new HostMergerLogic(clientMock.Object, new Mock<ILogger>().Object);
 
             var blocklist = new Blocklist
             {

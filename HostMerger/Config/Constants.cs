@@ -1,4 +1,4 @@
-﻿namespace HostMerger
+﻿namespace HostMerger.Config
 {
     public static class Constants
     {
