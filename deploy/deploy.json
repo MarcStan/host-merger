@@ -128,7 +128,6 @@
                         "phpVersion": "Off",
                         "pythonVersion": "Off",
                         "webSocketsEnabled": true,
-                        "alwaysOn": true,
                         "javaVersion": null,
                         "javaContainer": null,
                         "javaContainerVersion": null,
