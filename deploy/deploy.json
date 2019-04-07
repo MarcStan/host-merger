@@ -114,7 +114,31 @@
                         }
                     ]
                 }
-            }
+            },
+            "resources": [
+                {
+                    "type": "config",
+                    "apiVersion": "2016-08-01",
+                    "name": "web",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+                    ],
+                    "properties": {
+                        "netFrameworkVersion": "v4.7",
+                        "phpVersion": "Off",
+                        "pythonVersion": "Off",
+                        "webSocketsEnabled": true,
+                        "alwaysOn": true,
+                        "javaVersion": null,
+                        "javaContainer": null,
+                        "javaContainerVersion": null,
+                        "use32BitWorkerProcess": false,
+                        "loadBalancing": "LeastRequests",
+                        "minTlsVersion": "1.2",
+                        "ftpsState": "Disabled"
+                    }
+                }
+            ]
         }
     ]
 }
