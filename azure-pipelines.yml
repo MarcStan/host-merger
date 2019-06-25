@@ -1,6 +1,4 @@
-# custom agent is simply A LOT faster at building than the hosted queue
-# (esp. since nuget packages can be cached) but you can also use hosted queue
-# with no problems as I am not using any custom software during build
+# build definition for function app
 
 resources:
 - repo: self
@@ -10,61 +8,92 @@ trigger:
   branches:
     include:
     - master
-pool:
-  name: Default
-variables:
-  BuildConfiguration: 'release'
-  Major: '1'
-  Minor: '0'
-  Patch: '0'
-name: $(Major).$(Minor).$(Patch).$(BuildID)
-steps:
-- checkout: self
-  submodules: true
 
+stages:
+- stage: build
+  jobs:
+  - job: build
+    pool:
+      name: 'Default'
+    variables:
+      BuildConfiguration: 'release'
+    steps:
+    - checkout: self
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: Infrastructure Scripts'
-  inputs:
-    PathtoPublish: deploy
-    ArtifactName: deploy
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        projects: '**/*.csproj'
+        arguments: '--configuration $(BuildConfiguration) --no-cache'
+    
+    - task: DotNetCoreCLI@2
+      displayName: Test
+      inputs:
+        command: test
+        projects: '**/*Tests/*.csproj'
+        arguments: '--configuration $(BuildConfiguration)'
 
+    - task: DotNetCoreCLI@2
+      displayName: Publish
+      inputs:
+        command: publish
+        publishWebProjects: false
+        projects: '**/HostMerger.csproj'
+        arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
+        zipAfterPublish: false
 
-- task: DotNetCoreCLI@2
-  displayName: Restore
-  inputs:
-    command: restore
-    projects: '**/*.csproj'
+    - task: PublishPipelineArtifact@0
+      displayName: 'Publish build Artifact'
+      inputs:
+        targetPath: '$(build.artifactstagingdirectory)'
+        artifactName: function
 
+    - task: PublishPipelineArtifact@0
+      displayName: 'Publish Artifact: Infrastructure Scripts'
+      inputs:
+        targetPath: deploy
+        artifactName: deploy
 
-- task: DotNetCoreCLI@2
-  displayName: Build
-  inputs:
-    projects: '**/*.csproj'
-    arguments: '--configuration $(BuildConfiguration) /p:Version=$(Major).$(Minor) /p:FileVersion=$(Build.BuildNumber)'
+- stage: deployment
+  jobs:
+  - job: infra
+    pool:
+      name: 'Default'
+    variables:
+      ResourceGroupName: 'hostmerger'
 
+    steps:
+    - task: DownloadPipelineArtifact@1
+      inputs:
+        artifactName: deploy
+        targetPath: '$(System.ArtifactsDirectory)'
 
-- task: DotNetCoreCLI@2
-  displayName: Test
-  inputs:
-    command: test
-    projects: '**/*Tests/*.csproj'
-    arguments: '--configuration $(BuildConfiguration)'
+    - task: AzurePowerShell@4
+      displayName: 'Azure PowerShell script: FilePath'
+      inputs:
+        azureSubscription: 'Azure Private'
+        ScriptPath: '$(System.ArtifactsDirectory)/Deploy.ps1'
+        ScriptArguments: '-ResourceGroupName $(ResourceGroupName)'
+        azurePowerShellVersion: LatestVersion
 
+  - job: deploy
+    dependsOn: infra
+    pool:
+      name: 'Default'
+    variables:
+      ResourceGroupName: 'hostmerger'
 
-- task: DotNetCoreCLI@2
-  displayName: Publish
-  inputs:
-    command: publish
+    steps:
+    - task: DownloadPipelineArtifact@1
+      inputs:
+        artifactName: function
+        targetPath: '$(System.ArtifactsDirectory)'
 
-    publishWebProjects: false
-    projects: HostMerger/HostMerger.csproj
-    arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory) /p:Version=$(Major).$(Minor) /p:FileVersion=$(Build.BuildNumber)'
-    zipAfterPublish: false
-
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish build Artifact'
-  inputs:
-    PathtoPublish: '$(build.artifactstagingdirectory)'
-    ArtifactName: app
+    - task: AzureFunctionApp@1
+      displayName: 'Deploy Azure Function App'
+      inputs:
+        azureSubscription: 'Azure Private'
+        appType: functionApp
+        appName: '$(ResourceGroupName)'
+        package: '$(System.ArtifactsDirectory)/HostMerger'
+        deploymentMethod: runFromPackage

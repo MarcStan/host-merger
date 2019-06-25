@@ -16,10 +16,10 @@ param(
 )
 $ErrorActionPreference = "Stop"
 
-$ResourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
+$ResourceGroup = Get-AzResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
 if ($ResourceGroup -eq $null) {
     Write-Output "Creating resourcegroup $ResourceGroupName in $ResourceGroupLocation"
-    New-AzureRmResourceGroup -Name $ResourceGroupName -Location $ResourceGroupLocation -Force -ErrorAction Stop
+    New-AzResourceGroup -Name $ResourceGroupName -Location $ResourceGroupLocation -Force -ErrorAction Stop
 }
 
 Write-Output "Deploying resourcegroup $ResourceGroupName"
@@ -28,7 +28,7 @@ $templateFile = Join-Path $PSScriptRoot "deploy.json"
 $parameters = @{ }
 
 $date = date -Format "yyyy-MM-dd_HH-mm-ss"
-New-AzureRmResourceGroupDeployment `
+New-AzResourceGroupDeployment `
     -ResourceGroupName $ResourceGroupName `
     -TemplateFile $templateFile `
     -TemplateParameterObject $parameters `
