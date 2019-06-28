@@ -81,6 +81,7 @@ namespace HostMerger.Logic
                 using (_log.MeasureDuration($"FetchHosts - {url}"))
                 {
                     var src = await LoadHostFileAsync(url);
+                    _log.LogInformation($"Adding {src.Hosts.Length} hosts from {url}");
                     // don't parallelize, otherwise we would need to synchronize the hashset!
                     blocklist = await AppendNewAsync(blocklist, src);
                 }

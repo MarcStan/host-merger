@@ -50,7 +50,9 @@ namespace HostMerger.Tests
             {
                 "0.0.0.0 example.com",
                 "0.0.0.0 foobar.com",
-                "# comment.com"
+                "# comment.com",
+                "| comment.com",
+                "! comment.com"
             });
             var hosts = HostParser.Parse(hostfile);
             hosts.Should().HaveCount(2);
@@ -75,6 +77,7 @@ namespace HostMerger.Tests
         [TestCase("0.0.0.0 example.com # 0.0.0.0 foobar.com")]
         [TestCase("0.0.0.0\texample.com")]
         [TestCase("0.0.0.0\texample.com           ")]
+        [TestCase("example.com")]
         public void EdgeCasesShouldWork(string line)
         {
             var hosts = HostParser.Parse(line);

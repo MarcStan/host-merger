@@ -14,9 +14,12 @@ namespace HostMerger.Logic
             return lines
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Select(x => x.Trim())
-                .Where(x => !isComment(x) && (x.Contains(" ") || (x.Contains("\t"))))
-                .Select(x => x.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries)[1])
-                .ToArray();
+                .Where(x => !isComment(x))
+                .Select(x =>
+                {
+                    var p = x.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                    return p.Length > 1 ? p[1] : p[0];
+                }).ToArray();
         }
 
         public static string[] Parse(string content)
