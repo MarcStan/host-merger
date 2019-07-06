@@ -111,10 +111,6 @@
                         {
                             "name": "FUNCTIONS_WORKER_RUNTIME",
                             "value": "dotnet"
-                        },
-                        {
-                            "name": "KeyVaultName",
-                            "value": "hostmerger"
                         }
                     ]
                 }

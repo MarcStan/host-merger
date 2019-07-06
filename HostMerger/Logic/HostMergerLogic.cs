@@ -32,7 +32,7 @@ namespace HostMerger.Logic
             List<string> allowedHosts;
             using (_log.MeasureDuration("ReadWhitelist"))
             {
-                source = await cloudBlobManager.ReadAsync<HostSource>(config.Sources);
+                source = await cloudBlobManager.ReadAsync<HostSource>(config.Source);
                 var lines = await cloudBlobManager.ReadLinesAsync(config.Whitelist);
                 allowedHosts = lines
                     .Where(l => !string.IsNullOrEmpty(l) || l.StartsWith("#"))

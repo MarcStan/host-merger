@@ -10,14 +10,8 @@ It takes a list of input files and periodically merges them into a single global
 
 ## Setup
 
-Run the ARM deployment via Deploy.ps1 script with the desired resourcegroup name.
+Run the ARM deployment via Deploy.ps1 script with the desired resourcegroup name then modify the `azure-pipeline.yaml` to also use said resourcegroup name andmodify the appSettings parameters in the yaml file if need be.
 
-**Manually** create a keyvault and grant the MSI of the function app secret read+list permissions.
+Run function code deployment (e.g. via `azure-pipelines.yaml`) or deploy the function manually.
 
-**Manually** fill the keyvault with the needed secrets (check Configuration.cs for the values needed).
-
-**Manually** configure the function to use the keyvault (set KeyVaultName in app settings).
-
-Run function code deployment.
-
-**Manually** set keyvault name in configuration (e.g. vsts app settings override).
+It will run automatically once per day, or whenever the config/whitelist file is modified.

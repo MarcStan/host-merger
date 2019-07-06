@@ -4,7 +4,7 @@
     {
         public string ContainerName { get; set; }
 
-        public string Sources { get; set; }
+        public string Source { get; set; }
 
         public string Whitelist { get; set; }
 
