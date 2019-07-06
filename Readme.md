@@ -1,5 +1,11 @@
 # HostMerger
 
+Merge multiple sources into a single hostfile using azure functions.
+
+[Go to release](https://dev.azure.com/marcstanlive/Opensource/_build/definition?definitionId=24) 
+
+![HostMerger](https://dev.azure.com/marcstanlive/Opensource/_apis/build/status/24)
+
 Pi-hole, DNS66, uBlock, etc. all support multiple Host files as sources for blocklists.
 
 NetGuard does not. It only accepts a single hostfile.
@@ -21,7 +27,7 @@ Run the ARM deployment via Deploy.ps1 script with the desired resourcegroup name
 
 Run function code deployment (e.g. via `azure-pipelines.yaml`) or deploy the function manually.
 
-It will run automatically once per day and on deployment. If you modify the input or whitelist file you must manually trigger the function (or wait for it to run again).
+It will run automatically once per day. If you modify the input or whitelist file you can manually trigger the function (or wait for it to run again).
 
 ## Example
 
