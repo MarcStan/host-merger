@@ -1,0 +1,5 @@
+# supports comments
+# domains must just be added one per line
+# and will then never be blacklisted
+whitelisteddomain.example.com
+example.com

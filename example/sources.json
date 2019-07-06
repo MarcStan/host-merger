@@ -1,0 +1,16 @@
+{
+    "_comment": "each link is visited and all entries extracted",
+    "__info": "See https://github.com/jmdugan/blocklists/tree/master/ad_servers for a list of ",
+    "links": [
+        "https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt",
+        "http://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&startdate%5Bday%5D=&startdate%5Bmonth%5D=&startdate%5Byear%5D=&useip=0.0.0.0",
+        "https://someonewhocares.org/hosts/zero/hosts",
+        "http://www.malwaredomainlist.com/hostslist/hosts.txt"
+    ],
+    "__comment": "can contain raw host entries to be blocked as well. Either only the domain name or url or \"0.0.0.0 example.com\" format",
+    "raw": [
+        "google-analytics.com",
+        "https://www.google-analytics.com",
+        "0.0.0.0 ads.com"
+    ]
+}

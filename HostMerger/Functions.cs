@@ -13,6 +13,13 @@ namespace HostMerger
 {
     public static class Functions
     {
+        /// <summary>
+        /// Helper to allow running the function via API call
+        /// </summary>
+        /// <param name="req"></param>
+        /// <param name="context"></param>
+        /// <param name="log"></param>
+        /// <returns></returns>
         [FunctionName("execute")]
         public static Task RunOnceAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest req,
@@ -22,7 +29,7 @@ namespace HostMerger
 
         [FunctionName("merge")]
         public static async Task MergeHostsAsync(
-            [TimerTrigger(Constants.EveryDay)] TimerInfo timer,
+            [TimerTrigger(Constants.EveryDay, RunOnStartup = true)] TimerInfo timer,
             ExecutionContext context,
             ILogger log)
         {
@@ -31,8 +38,13 @@ namespace HostMerger
             // ugly setup here but ensures better testability of components..
             var merger = new HostMergerLogic(new HttpClient(new System.Net.Http.HttpClient()), log);
             var cloudBlobManager = new CloudBlobManager(config.AzureWebJobsStorage, config.ContainerName);
+            var outputCloudBlobManager =
+                string.IsNullOrEmpty(config.OutputContainerName) ||
+                config.OutputContainerName == config.ContainerName
+                    ? cloudBlobManager
+                    : new CloudBlobManager(config.AzureWebJobsStorage, config.OutputContainerName);
 
-            await merger.RunHostMergingAsync(cloudBlobManager, config);
+            await merger.RunHostMergingAsync(cloudBlobManager, outputCloudBlobManager, config);
         }
 
         /// <summary>

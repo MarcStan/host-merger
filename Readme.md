@@ -4,9 +4,16 @@ Pi-hole, DNS66, uBlock, etc. all support multiple Host files as sources for bloc
 
 NetGuard does not. It only accepts a single hostfile.
 
-To still get the same level of blocking, this tool merges them all into one.
+To still get the same level of blocking, this tool merges them all into one list.
 
 It takes a list of input files and periodically merges them into a single global list.
+
+## Features
+
+* deduplication
+* IPv4 and IPv6 format
+* whitelist to override domains
+* cheap thanks to Azure functions
 
 ## Setup
 
@@ -14,4 +21,10 @@ Run the ARM deployment via Deploy.ps1 script with the desired resourcegroup name
 
 Run function code deployment (e.g. via `azure-pipelines.yaml`) or deploy the function manually.
 
-It will run automatically once per day, or whenever the config/whitelist file is modified.
+It will run automatically once per day and on deployment. If you modify the input or whitelist file you must manually trigger the function (or wait for it to run again).
+
+## Example
+
+The example folder contains files that can be uploaded. If the azure function is configured to use them (via appSettings), it will generate an output file (default "hosts.txt") that can then be used by Windows, Pi-hole, DNS66, NetGuard and many others.
+
+Note that using many sources may result in big (20MB+) hostfiles and Windows may not be able to handle them!

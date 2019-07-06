@@ -78,6 +78,8 @@ namespace HostMerger.Tests
         [TestCase("0.0.0.0\texample.com")]
         [TestCase("0.0.0.0\texample.com           ")]
         [TestCase("example.com")]
+        [TestCase("https://example.com")]
+        [TestCase("http://example.com")]
         public void EdgeCasesShouldWork(string line)
         {
             var hosts = HostParser.Parse(line);

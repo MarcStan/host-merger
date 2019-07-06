@@ -17,9 +17,17 @@ namespace HostMerger.Logic
                 .Where(x => !isComment(x))
                 .Select(x =>
                 {
+                    // either "0.0.0.0 example.com" -> take second entriy
+                    // or "example.com -> take first entry
                     var p = x.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-                    return p.Length > 1 ? p[1] : p[0];
-                }).ToArray();
+                    var host = p.Length > 1 ? p[1] : p[0];
+                    if (host.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+                        return host.Substring("http://".Length);
+                    if (host.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+                        return host.Substring("https://".Length);
+                    return host;
+                })
+                .ToArray();
         }
 
         public static string[] Parse(string content)

@@ -26,7 +26,15 @@ namespace HostMerger.Logic
                 .RetryAsync(3);
         }
 
-        public async Task RunHostMergingAsync(ICloudBlobManager cloudBlobManager, Configuration config)
+        /// <summary>
+        /// Processes the config and retrieves the files from storage.
+        /// The creates a merged host file and outputs it to the output blob.
+        /// </summary>
+        /// <param name="cloudBlobManager"></param>
+        /// <param name="outputCloudBlobManager"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public async Task RunHostMergingAsync(ICloudBlobManager cloudBlobManager, ICloudBlobManager outputCloudBlobManager, Configuration config)
         {
             HostSource source;
             List<string> allowedHosts;
@@ -57,7 +65,7 @@ namespace HostMerger.Logic
                 hostlist = blocklist.Build();
 
             using (_log.MeasureDuration("UploadHostlist"))
-                await cloudBlobManager.WriteAsync(config.Output, hostlist);
+                await outputCloudBlobManager.WriteAsync(config.Output, hostlist);
         }
 
         /// <summary>
