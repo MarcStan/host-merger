@@ -14,7 +14,7 @@ stages:
   jobs:
   - job: build
     pool:
-      name: 'Default'
+      name: 'Hosted Windows 2019 with VS2019'
     variables:
       BuildConfiguration: 'release'
     steps:
@@ -58,7 +58,7 @@ stages:
   jobs:
   - job: infra
     pool:
-      name: 'Default'
+      name: 'Hosted Windows 2019 with VS2019'
     variables:
       ResourceGroupName: 'hostmerger'
 
@@ -79,7 +79,7 @@ stages:
   - job: deploy
     dependsOn: infra
     pool:
-      name: 'Default'
+      name: 'Hosted Windows 2019 with VS2019'
     variables:
       ResourceGroupName: 'hostmerger'
 
