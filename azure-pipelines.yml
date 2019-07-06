@@ -69,7 +69,7 @@ stages:
         targetPath: '$(System.ArtifactsDirectory)'
 
     - task: AzurePowerShell@4
-      displayName: 'Azure PowerShell script: FilePath'
+      displayName: 'Deploy infrastructure'
       inputs:
         azureSubscription: 'Opensource Deployments'
         ScriptPath: '$(System.ArtifactsDirectory)/Deploy.ps1'

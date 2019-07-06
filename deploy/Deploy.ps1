@@ -27,9 +27,7 @@ Write-Output "Deploying resourcegroup $ResourceGroupName"
 $templateFile = Join-Path $PSScriptRoot "deploy.json"
 $parameters = @{ }
 
-$date = date -Format "yyyy-MM-dd_HH-mm-ss"
 New-AzResourceGroupDeployment `
     -ResourceGroupName $ResourceGroupName `
     -TemplateFile $templateFile `
-    -TemplateParameterObject $parameters `
-    -Name "$date" `
+    -TemplateParameterObject $parameters
