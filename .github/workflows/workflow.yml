@@ -9,8 +9,10 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
+    
     - name: Run a one-line script
       run: echo Hello, world!
+      
     - name: Run a multi-line script
       run: |
         echo Add other actions to build,
@@ -20,14 +22,30 @@ jobs:
       with:
         dotnet-version: 2.2.402
     
-    - name: build with dotnet
+    - name: build
       run: dotnet build -c Release
 
     - name: test
-      run: dotnet test -c Release
-
-    - name: build with dotnet
       run: dotnet test -c Release --no-build **/*.Test*.csproj
 
     - name: publish
       run: dotnet publish -c Release **/HostMerger.csproj
+      
+    - uses: actions/upload-artifact@master
+      with:
+        name: function
+        path: HostMerger/bin/Release/netcoreapp2.2/publish
+      
+  release:
+    needs: build
+  
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/download-artifact@master
+      with:
+        name: function
+        path: drop
+        
+    - name: list
+      run: cat drop
