@@ -48,4 +48,4 @@ jobs:
         path: drop
         
     - name: list
-      run: cat drop
+      run: ls drop
