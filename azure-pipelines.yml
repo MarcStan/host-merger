@@ -60,13 +60,15 @@ stages:
         targetPath: deploy
         artifactName: deploy
 
-- stage: deployment
+- stage: release
   jobs:
   - job: infra
     pool:
       name: 'Hosted Windows 2019 with VS2019'
     variables:
-      ResourceGroupName: 'hostmerger'
+    - group: 'Deployment Credentials'
+    - name: ResourceGroupName
+      value: 'hostmerger'
 
     steps:
     - task: DownloadPipelineArtifact@1
@@ -87,7 +89,9 @@ stages:
     pool:
       name: 'Hosted Windows 2019 with VS2019'
     variables:
-      ResourceGroupName: 'hostmerger'
+    - group: 'Deployment Credentials'
+    - name: ResourceGroupName
+      value: 'hostmerger'
 
     steps:
     - task: DownloadPipelineArtifact@1
