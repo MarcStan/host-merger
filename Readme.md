@@ -2,9 +2,7 @@
 
 Merge multiple sources into a single hostfile using azure functions.
 
-[Go to release](https://dev.azure.com/marcstanlive/Opensource/_build/definition?definitionId=24) 
-
-![HostMerger](https://dev.azure.com/marcstanlive/Opensource/_apis/build/status/24)
+[![HostMerger](https://dev.azure.com/marcstanlive/Opensource/_apis/build/status/24)](https://dev.azure.com/marcstanlive/Opensource/_build/definition?definitionId=24) 
 
 Pi-hole, DNS66, uBlock, etc. all support multiple Host files as sources for blocklists.
 
