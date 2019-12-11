@@ -11,14 +11,15 @@ namespace HostMerger.Helper
     public class CloudBlobManager : ICloudBlobManager
     {
         private readonly CloudBlobClient _client;
-        private readonly string _containerName;
 
         public CloudBlobManager(string connectionString, string containerName)
         {
             var storageAccount = StorageAccount.NewFromConnectionString(connectionString);
             _client = storageAccount.CreateCloudBlobClient();
-            _containerName = containerName;
+            ContainerName = containerName;
         }
+
+        public string ContainerName { get; }
 
         public async Task<IReadOnlyList<string>> ReadLinesAsync(string blobName)
         {
@@ -59,7 +60,7 @@ namespace HostMerger.Helper
 
         private async Task<CloudBlockBlob> GetBlobAsync(string blobName)
         {
-            var container = _client.GetContainerReference(_containerName);
+            var container = _client.GetContainerReference(ContainerName);
             await container.CreateIfNotExistsAsync();
             return container.GetBlockBlobReference(blobName);
         }

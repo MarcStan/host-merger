@@ -6,6 +6,7 @@ using Polly;
 using Polly.Retry;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -41,7 +42,12 @@ namespace HostMerger.Logic
             using (_log.MeasureDuration("ReadWhitelist"))
             {
                 source = await cloudBlobManager.ReadAsync<HostSource>(config.Source);
+                if (source == null)
+                    throw new FileNotFoundException($"Missing source file {config.Source} in container {cloudBlobManager.ContainerName}");
+
                 var lines = await cloudBlobManager.ReadLinesAsync(config.Whitelist);
+                if (lines == null)
+                    throw new FileNotFoundException($"Missing whitelist {config.Whitelist} in container {cloudBlobManager.ContainerName}");
                 allowedHosts = lines
                     .Where(l => !string.IsNullOrEmpty(l) || l.StartsWith("#"))
                     .ToList();

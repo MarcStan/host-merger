@@ -5,6 +5,8 @@ namespace HostMerger.Helper
 {
     public interface ICloudBlobManager
     {
+        string ContainerName { get; }
+
         Task<IReadOnlyList<string>> ReadLinesAsync(string blobName);
 
         Task<T> ReadAsync<T>(string blobName);
