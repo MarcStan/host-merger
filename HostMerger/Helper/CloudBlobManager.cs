@@ -1,5 +1,5 @@
-﻿using Microsoft.Azure.WebJobs;
-using Microsoft.WindowsAzure.Storage.Blob;
+﻿using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Blob;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace HostMerger.Helper
 
         public CloudBlobManager(string connectionString, string containerName)
         {
-            var storageAccount = StorageAccount.NewFromConnectionString(connectionString);
+            var storageAccount = CloudStorageAccount.Parse(connectionString);
             _client = storageAccount.CreateCloudBlobClient();
             ContainerName = containerName;
         }
