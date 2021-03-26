@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace HostMerger.Tests
 {
-    public class SkipCountdownTests
+    public class BlocklistTests
     {
         [Test]
         public void BuildingBlockListShouldPrintIPs()

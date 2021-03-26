@@ -44,11 +44,8 @@ jobs:
     - name: Azure CLI ARM deployment
       uses: azure/CLI@v1
       with:
-        inlineScript: |
-          cd deploy
-          chmod +x deploy.sh
-          ./deploy.sh $ResourceGroup
-    - uses: azure/functions-action@a8d2ec41638acb2742695dcb061c05601d2bfb87 # pin@v1 
+        inlineScript: az deployment group create -g $ResourceGroup -f ./deploy/deploy.bicep
+    - uses: azure/functions-action@d727b851b0c3908f5cd8b93d03424207b8433baa # pin@v1 
       with:
         app-name: ${{ env.ResourceGroup }}
         package: functionapp
