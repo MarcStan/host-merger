@@ -24,7 +24,7 @@
         /// If not set will use <see cref="ContainerName"/>.
         /// Allows to change the container name of the output file (e.g. to put it in a public container).
         /// </summary>
-        public string OutputContainerName { get; set; }
+        public string OutputContainerName { get; set; } = "$web";
 
         /// <summary>
         /// Name of the output file.
